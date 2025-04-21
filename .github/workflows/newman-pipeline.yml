@@ -1,4 +1,4 @@
-name: Java CI for Pull Request
+name: Newman CI Pipeline
   
 on:
   push:
@@ -8,6 +8,7 @@ on:
 jobs:
   newman-tests:
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -26,9 +27,10 @@ jobs:
       - name: Wait for API Availability
         run: |
           echo "Waiting for API"
-          until curl -s http://localhost:9966/petclinic/actuator/health \
-                   | grep '"status":"UP"' >/dev/null; do
-            sleep 2          done
+          until curl -s http://localhost:9966/petclinic > /dev/null; do
+            echo "."
+            sleep 1
+          done
           echo "API available!"
 
       - name: Run Newman Tests
